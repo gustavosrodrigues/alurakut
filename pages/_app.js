@@ -1,5 +1,6 @@
 import { createGlobalStyle, ThemeProvider } from 'styled-components'
 
+
 /* Reset CSS */
 
 const GlobalStyle = createGlobalStyle`
@@ -11,7 +12,9 @@ const GlobalStyle = createGlobalStyle`
 }
 
 body {    
-  background-color: #D9E6F6;
+  background-image: url("https://wallpapercave.com/wp/wp4162202.png");
+  background-size : 100%;
+  background-repeat: no-repeat;
   font-family: sans-serif; 
  }
 

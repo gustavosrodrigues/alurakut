@@ -3,16 +3,17 @@ import MainGrid from '../src/components/MainGrid'
 import Box from '../src/components/Box'
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons'
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations'
+import Celeste from '../public/images/Celeste.png'
 
 function ProfileSidebar(propriedades) {
   return (
     <Box>
-      <img src={`https://github.com/${propriedades.profileGithub}.png`} style={{ borderRadius: '8px' }} />          
+      <img src={`https://github.com/${propriedades.githubUser}.png`} style={{ borderRadius: '8px' }} />          
       <hr />
 
       <p>
-        <a className="boxLink" href={`https://github.com/${propriedades.profileGithub}`}>
-          @{propriedades.profileGithub}
+        <a className="boxLink" href={`https://github.com/${propriedades.githubUser}`}>
+          @{propriedades.githubUser}
         </a>
       </p>
       <hr />
@@ -27,29 +28,51 @@ export default function Home() {
   const [comunidades, setComunidades] = React.useState([{
     id: '113245', 
     title: 'Eu odeio acordar cedo',
-    image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg'
-  }]);
+    image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg',
+    link: 'https://www.orkut.br.com/MainCommunity?cmm=10000'    
+  },
+  {
+    id: '1235245', 
+    title: 'I ♥ games',
+    image: 'https://www.seekpng.com/png/full/524-5241745_joystick-vector-png-clipart-playstation-joystick-game-clip.png',
+    link: 'https://www.gamevicio.com/'    
+  },
+  {
+    id: '1335245', 
+    title: 'Twin Peaks',
+    image: 'https://static.wikia.nocookie.net/twinpeaks/images/9/9b/X_d0d8225c.jpg',
+    link: 'https://youtu.be/XjkVgc6gIqk/'    
+  }
+]);
   // const comunidades = comunidades[0];
   // const alteradorDeComunidades/setComunidades = comunidades[1];
-
+  const asdf = Celeste;  
   const pessoasFavoritas = [
     'juunegreiros',
     'omariosouto',
     'peas',
     'rafaballerini',
     'marcobrunodev',
-    'felipefialho'
+    'felipefialho',
+    'temp',
+    'temp',
+    'temp',
+    'temp',
+    'temp',
+    'temp',
+    'temp',
   ]  
   const valorConfiavel = 3;
   const valorLegal = 2;
   const valorSexy = 2;
 
-  return (
+  return (    
     <>
-      <AlurakutMenu profileGithub={nomeUsuario}/>
+      <AlurakutMenu githubUser={nomeUsuario}/>
+      
       <MainGrid>       
         <div style={{ gridArea: 'profileArea'}}>
-          <ProfileSidebar profileGithub={nomeUsuario} />
+          <ProfileSidebar githubUser={nomeUsuario} />
         </div>      
         <div className="welcomeArea" style={{ gridArea: 'welcomeArea'}}>
           <Box>
@@ -72,6 +95,7 @@ export default function Home() {
                   id: new Date().toISOString(),
                   title: dadosDoForm.get('title'),
                   image: dadosDoForm.get('image'),
+                  link: dadosDoForm.get("link")
                 }
 
                 const comunidadesAtualizadas = [...comunidades, comunidade];
@@ -93,6 +117,13 @@ export default function Home() {
                   aria-label="Coloque uma URL para usarmos de capa"    
                 />
               </div>
+              <div>
+                <input 
+                  placeholder="Coloque uma URL para onde você quiser"
+                  name="link"
+                  aria-label="Coloque uma URL para onde você quiser"    
+                />
+              </div>
 
               <button>              
                 Criar comunidade
@@ -107,10 +138,10 @@ export default function Home() {
               Pessoas da comunidade ({pessoasFavoritas.length})
             </h2>
             <ul>
-              {pessoasFavoritas.map((itemAtual) => {
+              {pessoasFavoritas.slice(0, 6).map((itemAtual) => {
                 return (
                   <li key={itemAtual}>
-                    <a href={`/users/${itemAtual}`}>
+                    <a href={`https://github.com/${itemAtual}`}>
                       <img src={`https://github.com/${itemAtual}.png`} />
                       <span>{itemAtual}</span>
                     </a>
@@ -125,10 +156,10 @@ export default function Home() {
               Comunidades ({comunidades.length})
             </h2>
             <ul>
-              {comunidades.map((itemAtual) => {
+              {comunidades.slice(0, 6).map((itemAtual) => {
                 return (
                   <li key={itemAtual.id}>
-                    <a href={`/users/${itemAtual.title}`}>
+                    <a href={`${itemAtual.link}`}>
                       <img src={itemAtual.image} />
                       <span>{itemAtual.title}</span>
                     </a>
@@ -136,10 +167,10 @@ export default function Home() {
                 )
               })}
             </ul>
-          </ProfileRelationsBoxWrapper>
-          
+          </ProfileRelationsBoxWrapper>          
         </div>
-      </MainGrid>      
+      </MainGrid>
+
     </>
   )
 }
