@@ -23,6 +23,29 @@ function ProfileSidebar(propriedades) {
   )
 }
 
+function ProfileRelationsBox(propriedades) {
+  return (
+    <ProfileRelationsBoxWrapper>
+      <h2 className="smallTitle">
+        {propriedades.title} ({propriedades.items.length})
+      </h2>
+      <ul>
+         {propriedades.items.slice(0,6).map((itemAtual) => {
+           console.log(itemAtual);
+          return (
+            <li key={itemAtual}>
+                <a href={`${itemAtual.html_url}`}>
+                <img src={itemAtual.avatar_url} />
+                <span>{itemAtual.login}</span>
+              </a> 
+            </li>
+          )
+        })} 
+      </ul>
+    </ProfileRelationsBoxWrapper>
+  )
+}
+
 export default function Home() {
   const nomeUsuario = 'gustavosrodrigues';
   const [comunidades, setComunidades] = React.useState([{
@@ -44,9 +67,25 @@ export default function Home() {
     link: 'https://youtu.be/XjkVgc6gIqk/'    
   }
 ]);
+
+const [seguidores, setSeguidores] = React.useState([]);
+// 0 - Pegar o array de dados do github 
+React.useEffect(function() {
+  fetch(`https://api.github.com/users/${nomeUsuario}/followers`)
+  .then(function (respostaDoServidor) {
+    return respostaDoServidor.json();
+  })
+  .then(function(respostaCompleta) {
+    setSeguidores(respostaCompleta);
+  })
+}, [])
+
+console.log('seguidores antes do return', seguidores);
+
   // const comunidades = comunidades[0];
   // const alteradorDeComunidades/setComunidades = comunidades[1];
-  const asdf = Celeste;  
+  const asdf = Celeste;
+
   const pessoasFavoritas = [
     'juunegreiros',
     'omariosouto',
@@ -61,7 +100,8 @@ export default function Home() {
     'temp',
     'temp',
     'temp',
-  ]  
+  ]
+
   const valorConfiavel = 3;
   const valorLegal = 2;
   const valorSexy = 2;
@@ -133,6 +173,7 @@ export default function Home() {
         </div>
 
         <div className="profileRelationsArea" style={{ gridArea: 'profileRelationsArea'}}>
+          <ProfileRelationsBox title="Seguidores" items={seguidores} />          
           <ProfileRelationsBoxWrapper>          
             <h2 className="smallTitle">
               Pessoas da comunidade ({pessoasFavoritas.length})
