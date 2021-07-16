@@ -47,26 +47,8 @@ function ProfileRelationsBox(propriedades) {
 }
 
 export default function Home() {
-  const nomeUsuario = 'gustavosrodrigues';
-  const [comunidades, setComunidades] = React.useState([{
-    id: '113245', 
-    title: 'Eu odeio acordar cedo',
-    image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg',
-    link: 'https://www.orkut.br.com/MainCommunity?cmm=10000'    
-  },
-  {
-    id: '1235245', 
-    title: 'I ♥ games',
-    image: 'https://www.seekpng.com/png/full/524-5241745_joystick-vector-png-clipart-playstation-joystick-game-clip.png',
-    link: 'https://www.gamevicio.com/'    
-  },
-  {
-    id: '1335245', 
-    title: 'Twin Peaks',
-    image: 'https://static.wikia.nocookie.net/twinpeaks/images/9/9b/X_d0d8225c.jpg',
-    link: 'https://youtu.be/XjkVgc6gIqk/'    
-  }
-]);
+const nomeUsuario = 'gustavosrodrigues';
+const [comunidades, setComunidades] = React.useState([]);
 
 const [seguidores, setSeguidores] = React.useState([]);
 // 0 - Pegar o array de dados do github 
@@ -78,7 +60,37 @@ React.useEffect(function() {
   .then(function(respostaCompleta) {
     setSeguidores(respostaCompleta);
   })
+
+  // Buscando os dados no banco da DATOCMS
+  fetch('https://graphql.datocms.com/', {
+    method: 'POST',
+    headers: {
+      'authorization': '7a17646bd5a3000740b097a1a5ca09', //Token 
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({ "query": `query {
+      allCommunities {
+        id 
+        title
+        imageUrl
+        linkUrl
+        creatorSlug
+      }      
+    }` })    
+  })
+  .then((response) => response.json()) // Sintaxe mais simples do .then. Pega o retorno do fetch e já retorna
+  .then((respostaCompleta) => {
+    const comunidadesVindasDoDato = respostaCompleta.data.allCommunities; // "data" é padrão do GraphQl, "AllCommunities" busca todas as comunidades
+    console.log(comunidadesVindasDoDato)
+    setComunidades(comunidadesVindasDoDato);  // Insere as comunidades do Banco na lista    
+  })
+  // .then(function (response) { //Método comum de retorno de json
+  //   return response.json()
+  // })
 }, [])
+
+
 
 console.log('seguidores antes do return', seguidores);
 
@@ -128,18 +140,30 @@ console.log('seguidores antes do return', seguidores);
                 e.preventDefault();
                 const dadosDoForm = new FormData(e.target);
 
-                console.log('Campo: ', dadosDoForm.get('title'));
-                console.log('Campo: ', dadosDoForm.get('image'));
+                /* console.log('Campo: ', dadosDoForm.get('title'));
+                console.log('Campo: ', dadosDoForm.get('image')); */
 
-                const comunidade = {
-                  id: new Date().toISOString(),
+                const comunidade = {                  
                   title: dadosDoForm.get('title'),
-                  image: dadosDoForm.get('image'),
-                  link: dadosDoForm.get("link")
+                  imageUrl: dadosDoForm.get('image'),                  
+                  linkUrl: dadosDoForm.get("link"),
+                  creatorSlug: nomeUsuario, 
                 }
 
-                const comunidadesAtualizadas = [...comunidades, comunidade];
-                setComunidades(comunidadesAtualizadas)
+                fetch('/api/comunidades', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(comunidade)                  
+                })
+                .then(async (response) => { //async é seguido por await
+                  const dados = await response.json();
+                  console.log(dados);
+                  const comunidade = dados.registroCriado;
+                  const comunidadesAtualizadas = [...comunidades, comunidade];
+                  setComunidades(comunidadesAtualizadas)                  
+                })                
             }}>
               
               <div>
@@ -161,7 +185,8 @@ console.log('seguidores antes do return', seguidores);
                 <input 
                   placeholder="Coloque uma URL para onde você quiser"
                   name="link"
-                  aria-label="Coloque uma URL para onde você quiser"    
+                  aria-label="Coloque uma URL para onde você quiser"
+                  type="text"   
                 />
               </div>
 
@@ -199,9 +224,10 @@ console.log('seguidores antes do return', seguidores);
             <ul>
               {comunidades.slice(0, 6).map((itemAtual) => {
                 return (
+                  // itemAtual.nomeDoDado no banco
                   <li key={itemAtual.id}>
-                    <a href={`${itemAtual.link}`}>
-                      <img src={itemAtual.image} />
+                    <a href={itemAtual.linkUrl}>
+                      <img src={itemAtual.imageUrl} />
                       <span>{itemAtual.title}</span>
                     </a>
                   </li>
