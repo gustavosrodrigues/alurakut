@@ -3,6 +3,8 @@ import MainGrid from '../src/components/MainGrid'
 import Box from '../src/components/Box'
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons'
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations'
+import nookies from 'nookies';
+import jwt from 'jsonwebtoken';
 import Celeste from '../public/images/Celeste.png'
 
 function ProfileSidebar(propriedades) {
@@ -24,7 +26,7 @@ function ProfileSidebar(propriedades) {
 }
 
 function ProfileRelationsBox(propriedades) {
-  return (
+  return (    
     <ProfileRelationsBoxWrapper>
       <h2 className="smallTitle">
         {propriedades.title} ({propriedades.items.length})
@@ -46,8 +48,9 @@ function ProfileRelationsBox(propriedades) {
   )
 }
 
-export default function Home() {
-const nomeUsuario = 'gustavosrodrigues';
+export default function Home(props) {
+
+const nomeUsuario = props.githubUser;
 const [comunidades, setComunidades] = React.useState([]);
 
 const [seguidores, setSeguidores] = React.useState([]);
@@ -96,8 +99,7 @@ console.log('seguidores antes do return', seguidores);
 
   // const comunidades = comunidades[0];
   // const alteradorDeComunidades/setComunidades = comunidades[1];
-  const asdf = Celeste;
-
+  
   const pessoasFavoritas = [
     'juunegreiros',
     'omariosouto',
@@ -120,6 +122,7 @@ console.log('seguidores antes do return', seguidores);
 
   return (    
     <>
+      
       <AlurakutMenu githubUser={nomeUsuario}/>
       
       <MainGrid>       
@@ -149,7 +152,7 @@ console.log('seguidores antes do return', seguidores);
                   linkUrl: dadosDoForm.get("link"),
                   creatorSlug: nomeUsuario, 
                 }
-
+                
                 fetch('/api/comunidades', {
                   method: 'POST',
                   headers: {
@@ -241,3 +244,32 @@ console.log('seguidores antes do return', seguidores);
     </>
   )
 }
+
+export async function getServerSideProps(context) {
+  const cookies = nookies.get(context)
+  const token = cookies.USER_TOKEN;
+  const { isAuthenticated } = await fetch('https://alurakut-jwfelipee.vercel.app/api/auth', { //link oferecido no servidor do Discord    
+    headers: {
+        Authorization: token
+      }      
+  })
+  .then((resposta) => resposta.json())
+
+  if(!isAuthenticated) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      }
+    }
+  }
+  console.log(isAuthenticated);
+
+
+  const { githubUser } = jwt.decode(token);
+  return {
+    props: {
+      githubUser
+    }, // will be passed to the page component as props
+  }
+} 

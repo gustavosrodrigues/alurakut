@@ -1,4 +1,5 @@
 import { createGlobalStyle, ThemeProvider } from 'styled-components'
+import { AlurakutStyles } from '../src/lib/AlurakutCommons';
 
 
 /* Reset CSS */
@@ -12,10 +13,8 @@ const GlobalStyle = createGlobalStyle`
 }
 
 body {    
-  background-image: url("https://wallpapercave.com/wp/wp4162202.png");
-  background-size : 100%;
-  background-repeat: no-repeat;
-  font-family: sans-serif; 
+  font-family: sans-serif;
+    background-color: #D9E6F6; 
  }
 
  #__next {
@@ -29,6 +28,8 @@ body {
    height: auto;
    display: block;
  }
+
+ ${AlurakutStyles}
 `
 
 const theme = {
